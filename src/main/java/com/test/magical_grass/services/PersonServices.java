@@ -22,6 +22,20 @@ public class PersonServices {
         return person;
     }
 
+    public Person createPerson(Person person) {
+        logger.info("Creating person: " + person);
+        return person;
+    }
+
+    public Person updatePerson(Person person) {
+        logger.info("Updating person: " + person.getId());
+        return person;
+    }
+
+    public void deletePerson(String id) {
+        logger.info("Deleting person: " + id);
+    }
+
     public List<Person> findAll() {
         logger.info("Finding all people");
         List<Person> persons = new ArrayList<>();
@@ -31,8 +45,6 @@ public class PersonServices {
         }
         return persons;
     }
-
-
 
     public Person findById(String id) {
         logger.info("Finding person by id: " + id);
