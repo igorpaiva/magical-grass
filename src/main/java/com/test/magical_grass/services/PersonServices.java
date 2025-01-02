@@ -2,9 +2,10 @@ package com.test.magical_grass.services;
 
 import com.test.magical_grass.exceptions.ResourceNotFoundException;
 import com.test.magical_grass.dto.PersonDTO;
-import com.test.magical_grass.mapper.DozerMapper;
+import com.test.magical_grass.mapper.ModelMapperWrapper;
 import com.test.magical_grass.model.Person;
 import com.test.magical_grass.repositories.PersonRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,8 @@ public class PersonServices {
 
     public PersonDTO createPerson(PersonDTO person) {
         logger.info("Creating person: " + person);
-        Person createdPerson = DozerMapper.parseObject(person, Person.class);
-        return DozerMapper.parseObject(personRepository.save(createdPerson), PersonDTO.class);
+        Person createdPerson = ModelMapperWrapper.parseObject(person, Person.class);
+        return ModelMapperWrapper.parseObject(personRepository.save(createdPerson), PersonDTO.class);
     }
 
     public PersonDTO updatePerson(PersonDTO person, Long id) {
@@ -33,7 +34,7 @@ public class PersonServices {
         updatedPerson.setFirstName(person.getFirstName());
         updatedPerson.setLastName(person.getLastName());
 
-        return DozerMapper.parseObject(personRepository.save(updatedPerson), PersonDTO.class);
+        return ModelMapperWrapper.parseObject(personRepository.save(updatedPerson), PersonDTO.class);
     }
 
     public void deletePerson(Long id) {
@@ -45,13 +46,13 @@ public class PersonServices {
 
     public List<PersonDTO> findAll() {
         logger.info("Finding all people");
-        return DozerMapper.parseListObject(personRepository.findAll(), PersonDTO.class);
+        return ModelMapperWrapper.parseListObject(personRepository.findAll(), PersonDTO.class);
     }
 
     public PersonDTO findById(Long id) {
         logger.info("Finding person by id: " + id);
         Person foundPerson = personRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID."));
-        return DozerMapper.parseObject(foundPerson, PersonDTO.class);
+        return ModelMapperWrapper.parseObject(foundPerson, PersonDTO.class);
     }
 }
