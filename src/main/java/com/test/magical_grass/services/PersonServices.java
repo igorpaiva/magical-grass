@@ -1,6 +1,8 @@
 package com.test.magical_grass.services;
 
 import com.test.magical_grass.exceptions.ResourceNotFoundException;
+import com.test.magical_grass.dto.PersonDTO;
+import com.test.magical_grass.mapper.DozerMapper;
 import com.test.magical_grass.model.Person;
 import com.test.magical_grass.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +17,13 @@ public class PersonServices {
     @Autowired
     PersonRepository personRepository;
 
-    public Person createPerson(Person person) {
+    public PersonDTO createPerson(PersonDTO person) {
         logger.info("Creating person: " + person);
-        return personRepository.save(person);
+        Person createdPerson = DozerMapper.parseObject(person, Person.class);
+        return DozerMapper.parseObject(personRepository.save(createdPerson), PersonDTO.class);
     }
 
-    public Person updatePerson(Person person, Long id) {
+    public PersonDTO updatePerson(PersonDTO person, Long id) {
         logger.info("Updating person: " + person.getId());
         Person updatedPerson = personRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID."));
@@ -30,7 +33,7 @@ public class PersonServices {
         updatedPerson.setFirstName(person.getFirstName());
         updatedPerson.setLastName(person.getLastName());
 
-        return personRepository.save(updatedPerson);
+        return DozerMapper.parseObject(personRepository.save(updatedPerson), PersonDTO.class);
     }
 
     public void deletePerson(Long id) {
@@ -40,14 +43,15 @@ public class PersonServices {
         personRepository.delete(deletePerson);
     }
 
-    public List<Person> findAll() {
+    public List<PersonDTO> findAll() {
         logger.info("Finding all people");
-        return personRepository.findAll();
+        return DozerMapper.parseListObject(personRepository.findAll(), PersonDTO.class);
     }
 
-    public Person findById(Long id) {
+    public PersonDTO findById(Long id) {
         logger.info("Finding person by id: " + id);
-        return personRepository.findById(id)
+        Person foundPerson = personRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID."));
+        return DozerMapper.parseObject(foundPerson, PersonDTO.class);
     }
 }

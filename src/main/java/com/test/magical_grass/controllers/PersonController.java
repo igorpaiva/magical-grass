@@ -1,6 +1,6 @@
 package com.test.magical_grass.controllers;
 
-import com.test.magical_grass.model.Person;
+import com.test.magical_grass.dto.PersonDTO;
 import com.test.magical_grass.services.PersonServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,24 +19,24 @@ public class PersonController {
     private PersonServices personServices;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Person> findAll() {
+    public List<PersonDTO> findAll() {
         return personServices.findAll();
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Person findById(@PathVariable(value = "id") Long id) {
+    public PersonDTO findById(@PathVariable(value = "id") Long id) {
         return personServices.findById(id);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Person createPerson(@RequestBody Person person) {
+    public PersonDTO createPerson(@RequestBody PersonDTO person) {
         return personServices.createPerson(person);
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Person updatePerson(@RequestBody Person person, @PathVariable Long id) {
+    public PersonDTO updatePerson(@RequestBody PersonDTO person, @PathVariable Long id) {
         return personServices.updatePerson(person, id);
     }
 
