@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import com.test.magical_grass.dto.PersonDTO;
+import com.test.magical_grass.dto.v1.PersonDTO;
 import com.test.magical_grass.mapper.ModelMapperWrapper;
 import com.test.magical_grass.model.Person;
 import com.test.magical_grass.unittests.mapper.mocks.MockPerson;

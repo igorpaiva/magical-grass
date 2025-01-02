@@ -1,11 +1,12 @@
 package com.test.magical_grass.services;
 
+import com.test.magical_grass.dto.v2.PersonDTOV2;
 import com.test.magical_grass.exceptions.ResourceNotFoundException;
-import com.test.magical_grass.dto.PersonDTO;
+import com.test.magical_grass.dto.v1.PersonDTO;
 import com.test.magical_grass.mapper.ModelMapperWrapper;
+import com.test.magical_grass.mapper.custom.PersonMapper;
 import com.test.magical_grass.model.Person;
 import com.test.magical_grass.repositories.PersonRepository;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +18,19 @@ public class PersonServices {
     private Logger logger = Logger.getLogger(PersonServices.class.getName());
     @Autowired
     PersonRepository personRepository;
+    @Autowired
+    PersonMapper personMapper;
 
     public PersonDTO createPerson(PersonDTO person) {
         logger.info("Creating person: " + person);
         Person createdPerson = ModelMapperWrapper.parseObject(person, Person.class);
         return ModelMapperWrapper.parseObject(personRepository.save(createdPerson), PersonDTO.class);
+    }
+
+    public PersonDTOV2 createPersonV2(PersonDTOV2 person) {
+        logger.info("Creating person: " + person);
+        Person createdPerson = personMapper.convertDTOToPerson(person);
+        return personMapper.convertPersonToDTO(personRepository.save(createdPerson));
     }
 
     public PersonDTO updatePerson(PersonDTO person, Long id) {

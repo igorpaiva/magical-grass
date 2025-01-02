@@ -1,6 +1,7 @@
 package com.test.magical_grass.controllers;
 
-import com.test.magical_grass.dto.PersonDTO;
+import com.test.magical_grass.dto.v1.PersonDTO;
+import com.test.magical_grass.dto.v2.PersonDTOV2;
 import com.test.magical_grass.services.PersonServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -32,6 +33,12 @@ public class PersonController {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public PersonDTO createPerson(@RequestBody PersonDTO person) {
         return personServices.createPerson(person);
+    }
+
+    @PostMapping(value = "/v2", produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public PersonDTOV2 createPersonV2(@RequestBody PersonDTOV2 person) {
+        return personServices.createPersonV2(person);
     }
 
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE,

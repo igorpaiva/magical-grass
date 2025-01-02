@@ -1,6 +1,6 @@
 package com.test.magical_grass.unittests.mapper.mocks;
 
-import com.test.magical_grass.dto.PersonDTO;
+import com.test.magical_grass.dto.v1.PersonDTO;
 import com.test.magical_grass.model.Person;
 
 import java.util.ArrayList;

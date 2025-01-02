@@ -1,4 +1,4 @@
-package com.test.magical_grass.dto;
+package com.test.magical_grass.dto.v1;
 
 import java.io.Serializable;
 import java.util.Objects;
