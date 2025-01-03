@@ -2,8 +2,8 @@ package com.test.magical_grass.controllers;
 
 import com.test.magical_grass.dto.PersonDTO;
 import com.test.magical_grass.services.PersonServices;
+import com.test.magical_grass.util.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,24 +18,24 @@ public class PersonController {
     @Autowired
     private PersonServices personServices;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public List<PersonDTO> findAll() {
         return personServices.findAll();
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public PersonDTO findById(@PathVariable(value = "id") Long id) {
         return personServices.findById(id);
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML},
+            consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public PersonDTO createPerson(@RequestBody PersonDTO person) {
         return personServices.createPerson(person);
     }
 
-    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML},
+            consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public PersonDTO updatePerson(@RequestBody PersonDTO person, @PathVariable Long id) {
         return personServices.updatePerson(person, id);
     }
