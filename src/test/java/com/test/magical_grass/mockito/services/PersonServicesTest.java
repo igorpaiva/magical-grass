@@ -1,6 +1,7 @@
 package com.test.magical_grass.mockito.services;
 
 import com.test.magical_grass.dto.PersonDTO;
+import com.test.magical_grass.exceptions.RequiredObjectIsNullException;
 import com.test.magical_grass.model.Person;
 import com.test.magical_grass.repositories.PersonRepository;
 import com.test.magical_grass.services.PersonServices;
@@ -14,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -72,6 +74,14 @@ class PersonServicesTest {
     }
 
     @Test
+    void createWithNullPerson() {
+        Exception exception = assertThrows(RequiredObjectIsNullException.class, () -> personServices.createPerson(null));
+        String expectedMessage = "It is not allowed to persist a null object.";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
     void updatePerson() {
         Person person = input.mockEntity(1);
         person.setId(1L);
@@ -96,6 +106,14 @@ class PersonServicesTest {
     }
 
     @Test
+    void updateWithNullPerson() {
+        Exception exception = assertThrows(RequiredObjectIsNullException.class, () -> personServices.updatePerson(null, null));
+        String expectedMessage = "It is not allowed to persist a null object.";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
     void deletePerson() {
         Person person = input.mockEntity(1);
         person.setId(1L);
@@ -106,6 +124,30 @@ class PersonServicesTest {
 
     @Test
     void findAll() {
-        fail("Not yet implemented");
+        List<Person> people = input.mockEntityList();
+
+        when(personRepository.findAll()).thenReturn(people);
+
+        List<PersonDTO> result = personServices.findAll();
+        assertNotNull(result);
+        assertEquals(result.size(), people.size());
+
+        PersonDTO personOne = result.get(1);
+        assertNotNull(personOne);
+        assertNotNull(personOne.getKey());
+        assertNotNull(personOne.getLinks());
+        assertTrue(result.toString().contains("links: [</api/person/v1/1>;rel=\"self\"]"));
+        assertEquals("First Name Test1", personOne.getFirstName());
+        assertEquals("Last Name Test1", personOne.getLastName());
+        assertEquals("Address Test1", personOne.getAddress());
+
+        PersonDTO personFour = result.get(4);
+        assertNotNull(personFour);
+        assertNotNull(personFour.getKey());
+        assertNotNull(personFour.getLinks());
+        assertTrue(result.toString().contains("links: [</api/person/v1/4>;rel=\"self\"]"));
+        assertEquals("First Name Test4", personFour.getFirstName());
+        assertEquals("Last Name Test4", personFour.getLastName());
+        assertEquals("Address Test4", personFour.getAddress());
     }
 }

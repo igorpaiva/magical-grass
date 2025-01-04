@@ -2,6 +2,7 @@ package com.test.magical_grass.services;
 
 import com.test.magical_grass.controllers.PersonController;
 import com.test.magical_grass.dto.PersonDTO;
+import com.test.magical_grass.exceptions.RequiredObjectIsNullException;
 import com.test.magical_grass.exceptions.ResourceNotFoundException;
 import com.test.magical_grass.mapper.ModelMapperWrapper;
 import com.test.magical_grass.model.Person;
@@ -22,6 +23,7 @@ public class PersonServices {
     PersonRepository personRepository;
 
     public PersonDTO createPerson(PersonDTO person) {
+        if (person == null) throw new RequiredObjectIsNullException();
         logger.info("Creating person: " + person);
         Person createdPerson = ModelMapperWrapper.parseObject(person, Person.class);
         PersonDTO personDTO = ModelMapperWrapper.parseObject(personRepository.save(createdPerson), PersonDTO.class);
@@ -30,6 +32,7 @@ public class PersonServices {
     }
 
     public PersonDTO updatePerson(PersonDTO person, Long id) {
+        if (person == null) throw new RequiredObjectIsNullException();
         logger.info("Updating person: " + person.getKey());
         Person updatedPerson = personRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID."));
