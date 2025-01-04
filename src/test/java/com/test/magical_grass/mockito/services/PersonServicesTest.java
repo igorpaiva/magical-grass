@@ -41,10 +41,11 @@ class PersonServicesTest {
         Person person = input.mockEntity(1);
         person.setId(1L);
         when(personRepository.findById(1L)).thenReturn(Optional.of(person));
+
         PersonDTO result = personServices.findById(1L);
         assertNotNull(result);
-        assertNotNull(result);
-        assertNotNull(result);
+        assertNotNull(result.getKey());
+        assertNotNull(result.getLinks());
         assertTrue(result.toString().contains("links: [</api/person/v1/1>;rel=\"self\"]"));
         assertEquals("First Name Test1", result.getFirstName());
         assertEquals("Last Name Test1", result.getLastName());
@@ -53,17 +54,54 @@ class PersonServicesTest {
 
     @Test
     void createPerson() {
-        fail("Not yet implemented");
+        Person person = input.mockEntity(1);
+        Person savedPerson = person;
+        savedPerson.setId(1L);
+        PersonDTO personDTO = input.mockDTO(1);
+        personDTO.setKey(1L);
+        when(personRepository.save(person)).thenReturn(savedPerson);
+
+        PersonDTO result = personServices.createPerson(personDTO);
+        assertNotNull(result);
+        assertNotNull(result.getKey());
+        assertNotNull(result.getLinks());
+        assertTrue(result.toString().contains("links: [</api/person/v1/1>;rel=\"self\"]"));
+        assertEquals("First Name Test1", result.getFirstName());
+        assertEquals("Last Name Test1", result.getLastName());
+        assertEquals("Address Test1", result.getAddress());
     }
 
     @Test
     void updatePerson() {
-        fail("Not yet implemented");
+        Person person = input.mockEntity(1);
+        person.setId(1L);
+
+        Person updatedPerson = person;
+        updatedPerson.setId(1L);
+
+        PersonDTO personDTO = input.mockDTO(1);
+        personDTO.setKey(1L);
+
+        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
+        when(personRepository.save(person)).thenReturn(updatedPerson);
+
+        PersonDTO result = personServices.updatePerson(personDTO, updatedPerson.getId());
+        assertNotNull(result);
+        assertNotNull(result.getKey());
+        assertNotNull(result.getLinks());
+        assertTrue(result.toString().contains("links: [</api/person/v1/1>;rel=\"self\"]"));
+        assertEquals("First Name Test1", result.getFirstName());
+        assertEquals("Last Name Test1", result.getLastName());
+        assertEquals("Address Test1", result.getAddress());
     }
 
     @Test
     void deletePerson() {
-        fail("Not yet implemented");
+        Person person = input.mockEntity(1);
+        person.setId(1L);
+
+        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
+        personServices.deletePerson(person.getId());
     }
 
     @Test
