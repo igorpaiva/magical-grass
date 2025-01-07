@@ -27,3 +27,5 @@ replay_pid*
 
 application-secrets.properties
 target
+
+docker-compose.yml
