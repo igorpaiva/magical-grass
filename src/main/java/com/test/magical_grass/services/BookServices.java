@@ -1,7 +1,6 @@
 package com.test.magical_grass.services;
 
 import com.test.magical_grass.controllers.BookController;
-import com.test.magical_grass.controllers.PersonController;
 import com.test.magical_grass.dto.BookDTO;
 import com.test.magical_grass.exceptions.RequiredObjectIsNullException;
 import com.test.magical_grass.exceptions.ResourceNotFoundException;
@@ -19,7 +18,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 public class BookServices {
-    private Logger logger = Logger.getLogger(PersonServices.class.getName());
+    private Logger logger = Logger.getLogger(BookServices.class.getName());
     @Autowired
     BookRepository bookRepository;
 
@@ -62,7 +61,7 @@ public class BookServices {
         updatedBook.setLaunchDate(book.getLaunchDate());
 
         BookDTO bookDTO = ModelMapperWrapper.parseObject(bookRepository.save(updatedBook), BookDTO.class);
-        bookDTO.add(linkTo(methodOn(PersonController.class).findById(bookDTO.getKey())).withSelfRel());
+        bookDTO.add(linkTo(methodOn(BookController.class).findById(bookDTO.getKey())).withSelfRel());
         return bookDTO;
     }
 
