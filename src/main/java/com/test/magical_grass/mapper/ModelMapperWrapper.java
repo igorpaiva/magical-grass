@@ -1,6 +1,8 @@
 package com.test.magical_grass.mapper;
 
+import com.test.magical_grass.dto.BookDTO;
 import com.test.magical_grass.dto.PersonDTO;
+import com.test.magical_grass.model.Book;
 import com.test.magical_grass.model.Person;
 import org.modelmapper.ModelMapper;
 import java.util.ArrayList;
@@ -14,6 +16,10 @@ public class ModelMapperWrapper {
                 .addMapping(Person::getId, PersonDTO::setKey);
         mapper.createTypeMap(PersonDTO.class, Person.class)
                 .addMapping(PersonDTO::getKey, Person::setId);
+        mapper.createTypeMap(Book.class, BookDTO.class)
+                .addMapping(Book::getId, BookDTO::setKey);
+        mapper.createTypeMap(BookDTO.class, Book.class)
+                .addMapping(BookDTO::getKey, Book::setId);
     }
 
     public static <S, D> D parseObject(S source, Class<D> destinationClass) {

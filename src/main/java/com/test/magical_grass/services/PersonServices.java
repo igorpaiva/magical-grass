@@ -22,6 +22,23 @@ public class PersonServices {
     @Autowired
     PersonRepository personRepository;
 
+    public List<PersonDTO> findAll() {
+        logger.info("Finding all people");
+        List<PersonDTO> personDTOList = ModelMapperWrapper.parseListObject(personRepository.findAll(), PersonDTO.class);
+        personDTOList.stream().forEach(personDTO -> personDTO.add(linkTo(methodOn(PersonController.class)
+                .findById(personDTO.getKey())).withSelfRel()));
+        return personDTOList;
+    }
+
+    public PersonDTO findById(Long id) {
+        logger.info("Finding person by id: " + id);
+        Person foundPerson = personRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID."));
+        PersonDTO personDTO = ModelMapperWrapper.parseObject(foundPerson, PersonDTO.class);
+        personDTO.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
+        return personDTO;
+    }
+
     public PersonDTO createPerson(PersonDTO person) {
         if (person == null) throw new RequiredObjectIsNullException();
         logger.info("Creating person: " + person);
@@ -52,22 +69,5 @@ public class PersonServices {
         Person deletePerson = personRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID."));
         personRepository.delete(deletePerson);
-    }
-
-    public List<PersonDTO> findAll() {
-        logger.info("Finding all people");
-        List<PersonDTO> personDTOList = ModelMapperWrapper.parseListObject(personRepository.findAll(), PersonDTO.class);
-        personDTOList.stream().forEach(personDTO -> personDTO.add(linkTo(methodOn(PersonController.class)
-                .findById(personDTO.getKey())).withSelfRel()));
-        return personDTOList;
-    }
-
-    public PersonDTO findById(Long id) {
-        logger.info("Finding person by id: " + id);
-        Person foundPerson = personRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID."));
-        PersonDTO personDTO = ModelMapperWrapper.parseObject(foundPerson, PersonDTO.class);
-        personDTO.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
-        return personDTO;
     }
 }

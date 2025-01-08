@@ -10,11 +10,11 @@ import java.util.Objects;
 @JsonPropertyOrder({"id", "firstName", "lastName", "address"})
 public class PersonDTO extends RepresentationModel<PersonDTO> implements Serializable {
 
-    private static final long serialVersionUID = 1L;
     @JsonProperty("id")
     private Long key;
     private String firstName;
     private String lastName;
+    private String address;
 
     public Long getKey() {
         return key;
@@ -23,8 +23,6 @@ public class PersonDTO extends RepresentationModel<PersonDTO> implements Seriali
     public void setKey(Long key) {
         this.key = key;
     }
-
-    private String address;
 
     public PersonDTO() {}
 
