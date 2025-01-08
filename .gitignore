@@ -26,6 +26,6 @@ replay_pid*
 .idea
 
 application-secrets.properties
-target
+target/
 
 docker-compose.yml
