@@ -141,7 +141,7 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     public void testFindPersonWithWrongOrigin() throws JsonProcessingException {
         mockPerson();
         requestSpecification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_MAGICAL_GRASS)
+                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_LETHAL_FROGS)
                 .setBasePath("/api/person/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
