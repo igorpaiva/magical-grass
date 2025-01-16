@@ -1,6 +1,7 @@
 package com.test.magical_grass.exceptions.handler;
 
 import com.test.magical_grass.exceptions.ExceptionResponse;
+import com.test.magical_grass.exceptions.InvalidJwtAuthenticationException;
 import com.test.magical_grass.exceptions.ResourceNotFoundException;
 import com.test.magical_grass.exceptions.RequiredObjectIsNullException;
 import org.springframework.http.HttpStatus;
@@ -36,5 +37,14 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
         ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(),
                 request.getDescription(false));
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidJwtAuthenticationException.class)
+    public final ResponseEntity<ExceptionResponse> handleInvalidJwtAuthenticationExceptions(Exception ex, WebRequest request) {
+        ExceptionResponse response = new ExceptionResponse(
+                new Date(),
+                ex.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 }

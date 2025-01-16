@@ -23,9 +23,6 @@ public class User implements UserDetails, Serializable {
     @Column(name = "user_name", unique = true, nullable = false)
     private String username;
 
-    @Column(name = "full_name")
-    private String fullName;
-
     @Column(name = "password")
     private String password;
 
@@ -104,14 +101,6 @@ public class User implements UserDetails, Serializable {
         this.username = username;
     }
 
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
     public void setPassword(String password) {
         this.password = password;
     }
@@ -148,11 +137,11 @@ public class User implements UserDetails, Serializable {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return accountNonExpired == user.accountNonExpired && accountNonLocked == user.accountNonLocked && credentialsNonExpired == user.credentialsNonExpired && Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(fullName, user.fullName) && Objects.equals(password, user.password) && Objects.equals(enabled, user.enabled) && Objects.equals(permissions, user.permissions);
+        return accountNonExpired == user.accountNonExpired && accountNonLocked == user.accountNonLocked && credentialsNonExpired == user.credentialsNonExpired && Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(password, user.password) && Objects.equals(enabled, user.enabled) && Objects.equals(permissions, user.permissions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, fullName, password, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled, permissions);
+        return Objects.hash(id, username, password, accountNonExpired, accountNonLocked, credentialsNonExpired, enabled, permissions);
     }
 }
