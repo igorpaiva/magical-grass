@@ -2,9 +2,12 @@ package com.test.magical_grass.integrationtests.controller.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test.magical_grass.configs.TestConfigs;
+import com.test.magical_grass.integrationtests.dto.AccountCredentialsDTO;
 import com.test.magical_grass.integrationtests.dto.PersonDTO;
+import com.test.magical_grass.integrationtests.dto.TokenDTO;
 import com.test.magical_grass.integrationtests.testcontainers.AbstractIntegrationTest;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
@@ -35,19 +38,43 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(1)
-    public void testCreatePerson() throws JsonProcessingException {
-        mockPerson();
+    @Order(0)
+    public void authorization() throws JsonMappingException, JsonProcessingException {
+        AccountCredentialsDTO user = new AccountCredentialsDTO("admin123", "johndoe");
+
+        var rawResponse =
+                given()
+                        .basePath("/auth/signin")
+                        .port(TestConfigs.SERVER_PORT)
+                        .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                        .body(user)
+                        .when()
+                        .post()
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body().asString();
+
+        var body = objectMapper.readTree(rawResponse).get("body");
+        var accessToken = objectMapper.treeToValue(body, TokenDTO.class).getAccessToken();
+
         requestSpecification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_MAGICAL_GRASS)
+                .addHeader(TestConfigs.HEADER_PARAM_AUTHORIZATION, "Bearer " + accessToken)
                 .setBasePath("/api/person/v1")
                 .setPort(TestConfigs.SERVER_PORT)
                 .addFilter(new RequestLoggingFilter(LogDetail.ALL))
                 .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
                 .build();
+    }
+
+    @Test
+    @Order(1)
+    public void testCreatePerson() throws JsonProcessingException {
+        mockPerson();
         var content =
             given().spec(requestSpecification)
                     .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                    .header(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_MAGICAL_GRASS)
                     .body(personDTO)
                     .when()
                     .post()
@@ -76,16 +103,10 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     @Order(2)
     public void testCreatePersonWithWrongOrigin() throws JsonProcessingException {
         mockPerson();
-        requestSpecification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_LETHAL_FROGS)
-                .setBasePath("/api/person/v1")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
         var content =
                 given().spec(requestSpecification)
                         .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                        .header(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_LETHAL_FROGS)
                         .body(personDTO)
                         .when()
                         .post()
@@ -102,16 +123,10 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     @Order(3)
     public void testFindPerson() throws JsonProcessingException {
         mockPerson();
-        requestSpecification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_MAGICAL_GRASS)
-                .setBasePath("/api/person/v1")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
         var content =
                 given().spec(requestSpecification)
                         .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                        .header(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_MAGICAL_GRASS)
                         .pathParam("id", personDTO.getId())
                         .when()
                         .get("{id}")
@@ -140,16 +155,10 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     @Order(4)
     public void testFindPersonWithWrongOrigin() throws JsonProcessingException {
         mockPerson();
-        requestSpecification = new RequestSpecBuilder()
-                .addHeader(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_LETHAL_FROGS)
-                .setBasePath("/api/person/v1")
-                .setPort(TestConfigs.SERVER_PORT)
-                .addFilter(new RequestLoggingFilter(LogDetail.ALL))
-                .addFilter(new ResponseLoggingFilter(LogDetail.ALL))
-                .build();
         var content =
                 given().spec(requestSpecification)
                         .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                        .header(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_LETHAL_FROGS)
                         .pathParam("id", personDTO.getId())
                         .when()
                         .get("{id}")
