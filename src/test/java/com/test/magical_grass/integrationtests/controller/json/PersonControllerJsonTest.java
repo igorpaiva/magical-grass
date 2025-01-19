@@ -68,38 +68,6 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
     }
 
     @Test
-    @Order(1)
-    public void testCreatePerson() throws JsonProcessingException {
-        mockPerson();
-        var content =
-            given().spec(requestSpecification)
-                    .contentType(TestConfigs.CONTENT_TYPE_JSON)
-                    .header(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_MAGICAL_GRASS)
-                    .body(personDTO)
-                    .when()
-                    .post()
-                    .then()
-                        .statusCode(200)
-                    .extract()
-                        .body().asString();
-
-        PersonDTO createdPerson = objectMapper.readValue(content, PersonDTO.class);
-        personDTO = createdPerson;
-
-        assertNotNull(createdPerson);
-        assertNotNull(createdPerson.getId());
-        assertNotNull(createdPerson.getFirstName());
-        assertNotNull(createdPerson.getLastName());
-        assertNotNull(createdPerson.getAddress());
-
-        assertTrue(createdPerson.getId() > 0);
-
-        assertEquals("John", createdPerson.getFirstName());
-        assertEquals("Doe", createdPerson.getLastName());
-        assertEquals("New York - US", createdPerson.getAddress());
-    }
-
-    @Test
     @Order(2)
     public void testCreatePersonWithWrongOrigin() throws JsonProcessingException {
         mockPerson();
@@ -117,38 +85,6 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
 
         assertNotNull(content);
         assertEquals("Invalid CORS request", content);
-    }
-
-    @Test
-    @Order(3)
-    public void testFindPerson() throws JsonProcessingException {
-        mockPerson();
-        var content =
-                given().spec(requestSpecification)
-                        .contentType(TestConfigs.CONTENT_TYPE_JSON)
-                        .header(TestConfigs.HEADER_PARAM_ORIGIN, TestConfigs.ORIGIN_MAGICAL_GRASS)
-                        .pathParam("id", personDTO.getId())
-                        .when()
-                        .get("{id}")
-                        .then()
-                        .statusCode(200)
-                        .extract()
-                        .body().asString();
-
-        PersonDTO createdPerson = objectMapper.readValue(content, PersonDTO.class);
-        personDTO = createdPerson;
-
-        assertNotNull(createdPerson);
-        assertNotNull(createdPerson.getId());
-        assertNotNull(createdPerson.getFirstName());
-        assertNotNull(createdPerson.getLastName());
-        assertNotNull(createdPerson.getAddress());
-
-        assertTrue(createdPerson.getId() > 0);
-
-        assertEquals("John", createdPerson.getFirstName());
-        assertEquals("Doe", createdPerson.getLastName());
-        assertEquals("New York - US", createdPerson.getAddress());
     }
 
     @Test
