@@ -7,6 +7,7 @@ import com.test.magical_grass.exceptions.ResourceNotFoundException;
 import com.test.magical_grass.mapper.ModelMapperWrapper;
 import com.test.magical_grass.model.Person;
 import com.test.magical_grass.repositories.PersonRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +62,20 @@ public class PersonServices {
 
         PersonDTO personDTO = ModelMapperWrapper.parseObject(personRepository.save(updatedPerson), PersonDTO.class);
         personDTO.add(linkTo(methodOn(PersonController.class).findById(personDTO.getKey())).withSelfRel());
+        return personDTO;
+    }
+
+    @Transactional
+    public PersonDTO disablePerson(Long id) {
+        logger.info("Disabling person by id: " + id);
+
+        personRepository.disablePerson(id);
+
+        Person foundPerson = personRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No records found for this ID."));
+
+        PersonDTO personDTO = ModelMapperWrapper.parseObject(foundPerson, PersonDTO.class);
+        personDTO.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
         return personDTO;
     }
 

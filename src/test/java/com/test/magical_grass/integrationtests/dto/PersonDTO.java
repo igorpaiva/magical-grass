@@ -14,6 +14,7 @@ public class PersonDTO implements Serializable {
     private String firstName;
     private String lastName;
     private String address;
+    private Boolean enabled;
 
     public Long getId() {
         return id;
@@ -47,15 +48,23 @@ public class PersonDTO implements Serializable {
         this.address = address;
     }
 
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         PersonDTO personDTO = (PersonDTO) o;
-        return Objects.equals(id, personDTO.id) && Objects.equals(firstName, personDTO.firstName) && Objects.equals(lastName, personDTO.lastName) && Objects.equals(address, personDTO.address);
+        return Objects.equals(id, personDTO.id) && Objects.equals(firstName, personDTO.firstName) && Objects.equals(lastName, personDTO.lastName) && Objects.equals(address, personDTO.address) && Objects.equals(enabled, personDTO.enabled);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, address);
+        return Objects.hash(id, firstName, lastName, address, enabled);
     }
 }
