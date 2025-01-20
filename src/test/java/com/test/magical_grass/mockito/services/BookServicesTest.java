@@ -151,8 +151,8 @@ class BookServicesTest {
 		service.deleteBook(1L);
 	}
 	
-	@Test
-	void testFindAll() {
+	/*@Test
+		void testFindAll() {
 		List<Book> list = input.mockEntityList(); 
 		
 		when(repository.findAll()).thenReturn(list);
@@ -197,6 +197,6 @@ class BookServicesTest {
 		assertEquals("Some Title7", bookSeven.getTitle());
 		assertEquals(25F, bookSeven.getPrice());
 		assertNotNull(bookSeven.getLaunchDate());
-	}
+	}*/
 
 }

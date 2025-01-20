@@ -9,9 +9,14 @@ import com.test.magical_grass.model.Person;
 import com.test.magical_grass.repositories.PersonRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -23,12 +28,18 @@ public class PersonServices {
     @Autowired
     PersonRepository personRepository;
 
-    public List<PersonDTO> findAll() {
+    @Autowired
+    PagedResourcesAssembler<PersonDTO> pagedResourcesAssembler;
+
+    public PagedModel<EntityModel<PersonDTO>> findAll(Pageable pageable) {
         logger.info("Finding all people");
-        List<PersonDTO> personDTOList = ModelMapperWrapper.parseListObject(personRepository.findAll(), PersonDTO.class);
-        personDTOList.stream().forEach(personDTO -> personDTO.add(linkTo(methodOn(PersonController.class)
+        Page<Person> personPage = personRepository.findAll(pageable);
+        Page<PersonDTO> personDTOPage = personPage.map(p -> ModelMapperWrapper.parseObject(p, PersonDTO.class));
+        personDTOPage.map(personDTO -> personDTO.add(linkTo(methodOn(PersonController.class)
                 .findById(personDTO.getKey())).withSelfRel()));
-        return personDTOList;
+        Link link = linkTo(methodOn(PersonController.class)
+                .findAll(pageable.getPageNumber(), pageable.getSort().toString(), pageable.getPageSize())).withSelfRel();
+        return pagedResourcesAssembler.toModel(personDTOPage, link);
     }
 
     public PersonDTO findById(Long id) {

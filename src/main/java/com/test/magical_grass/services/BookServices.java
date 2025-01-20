@@ -8,6 +8,12 @@ import com.test.magical_grass.mapper.ModelMapperWrapper;
 import com.test.magical_grass.model.Book;
 import com.test.magical_grass.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,13 +28,18 @@ public class BookServices {
     @Autowired
     BookRepository bookRepository;
 
-    public List<BookDTO> findAll() {
+    @Autowired
+    PagedResourcesAssembler<BookDTO> pagedResourcesAssembler;
+
+    public PagedModel<EntityModel<BookDTO>> findAll(Pageable pageable) {
         logger.info("Finding all books");
-        List<Book> books = bookRepository.findAll();
-        List<BookDTO> bookDTOList = ModelMapperWrapper.parseListObject(books, BookDTO.class);
-        bookDTOList.stream().forEach(bookDTO -> bookDTO.add(linkTo(methodOn(BookController.class)
+        Page<Book> bookPage = bookRepository.findAll(pageable);
+        Page<BookDTO> bookDTOPage = bookPage.map(book -> ModelMapperWrapper.parseObject(book, BookDTO.class));
+        bookDTOPage.map(bookDTO -> bookDTO.add(linkTo(methodOn(BookController.class)
                 .findById(bookDTO.getKey())).withSelfRel()));
-        return bookDTOList;
+        Link link = linkTo(methodOn(BookController.class)
+                .findAll(pageable.getPageNumber(), pageable.getSort().toString(), pageable.getPageSize())).withSelfRel();
+        return pagedResourcesAssembler.toModel(bookDTOPage, link);
     }
 
     public BookDTO findById(Long id) {
