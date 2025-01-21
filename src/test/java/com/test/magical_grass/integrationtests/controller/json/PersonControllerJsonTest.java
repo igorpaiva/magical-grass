@@ -298,6 +298,29 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         assertTrue(foundPerson.getEnabled());
     }
 
+    @Test
+    @Order(6)
+    public void testHATEAOS() throws JsonMappingException, JsonProcessingException {
+        var content =
+                given().spec(requestSpecification)
+                        .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                        .queryParam("page", 3)
+                        .queryParam("direction", "asc")
+                        .queryParam("limit", 10)
+                        .when()
+                        .get()
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body().asString();
+
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/api/person/v1/790\"}}"));
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/api/person/v1/998\"}}"));
+        assertTrue(content.contains("\"_links\":{\"self\":{\"href\":\"http://localhost:8888/api/person/v1/850\"}}"));
+
+        assertTrue(content.contains("\"page\":{\"size\":10,\"totalElements\":1003,\"totalPages\":101,\"number\":3}"));
+    }
+
     private void mockPerson() {
         personDTO.setId(1L);
         personDTO.setFirstName("John");
