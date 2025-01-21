@@ -1,3 +1,5 @@
+[![API's Continuous Integration and Delivery](https://github.com/igorpaiva/magical-grass/actions/workflows/ci.yml/badge.svg)](https://github.com/igorpaiva/magical-grass/actions/workflows/ci.yml)
+
 # Magical Grass
 
 Magical Grass is a demo project for learning API development using Java and Spring Boot, following best practices. It integrates with MySQL for data persistence and leverages popular Spring Boot features to streamline development.
