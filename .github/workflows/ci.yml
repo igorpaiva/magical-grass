@@ -32,6 +32,8 @@ jobs:
       run: mvn clean package
 
     - name: docker compose build
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       working-directory: ./
       run: docker compose build
 
