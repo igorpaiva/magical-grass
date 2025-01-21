@@ -1,7 +1,6 @@
 package com.test.magical_grass.integrationtests.controller.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +8,7 @@ import com.test.magical_grass.configs.TestConfigs;
 import com.test.magical_grass.integrationtests.dto.AccountCredentialsDTO;
 import com.test.magical_grass.integrationtests.dto.PersonDTO;
 import com.test.magical_grass.integrationtests.dto.TokenDTO;
+import com.test.magical_grass.integrationtests.dto.wrappers.PersonDTOWrapper;
 import com.test.magical_grass.integrationtests.testcontainers.AbstractIntegrationTest;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
@@ -17,8 +17,6 @@ import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
@@ -218,6 +216,9 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         var content =
                 given().spec(requestSpecification)
                         .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                        .queryParam("page", 3)
+                        .queryParam("direction", "asc")
+                        .queryParam("limit", 10)
                         .when()
                         .get()
                         .then()
@@ -225,7 +226,8 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                         .extract()
                         .body().asString();
 
-        List<PersonDTO> foundPeople = objectMapper.readValue(content, new TypeReference<List<PersonDTO>>(){});
+        PersonDTOWrapper personDTOWrapper = objectMapper.readValue(content, PersonDTOWrapper.class);
+        var foundPeople = personDTOWrapper.getEmbedded().getPersonDTOList();
 
         PersonDTO foundPerson = foundPeople.getFirst();
 
@@ -234,11 +236,12 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
         assertNotNull(foundPerson.getLastName());
         assertNotNull(foundPerson.getAddress());
 
-        assertEquals(2, foundPerson.getId());
+        assertEquals(790, foundPerson.getId());
 
-        assertEquals("Johnny", foundPerson.getFirstName());
-        assertEquals("Appleseed", foundPerson.getLastName());
-        assertEquals("Austin - USA", foundPerson.getAddress());
+        assertEquals("Alina", foundPerson.getFirstName());
+        assertEquals("O' Mahony", foundPerson.getLastName());
+        assertEquals("56443 Dunning Alley", foundPerson.getAddress());
+        assertFalse(foundPerson.getEnabled());
     }
 
     @Test
@@ -258,6 +261,41 @@ public class PersonControllerJsonTest extends AbstractIntegrationTest {
                 .get()
                 .then()
                 .statusCode(403);
+    }
+
+    @Test
+    @Order(8)
+    public void testFindPersonByFirstName() throws JsonMappingException, JsonProcessingException {
+        var content =
+                given().spec(requestSpecification)
+                        .contentType(TestConfigs.CONTENT_TYPE_JSON)
+                        .pathParam("firstName", "lano")
+                        .queryParam("page", 0)
+                        .queryParam("direction", "asc")
+                        .queryParam("limit", 10)
+                        .when()
+                        .get("findPersonByName/{firstName}")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body().asString();
+
+        PersonDTOWrapper personDTOWrapper = objectMapper.readValue(content, PersonDTOWrapper.class);
+        var foundPeople = personDTOWrapper.getEmbedded().getPersonDTOList();
+
+        PersonDTO foundPerson = foundPeople.getFirst();
+
+        assertNotNull(foundPerson.getId());
+        assertNotNull(foundPerson.getFirstName());
+        assertNotNull(foundPerson.getLastName());
+        assertNotNull(foundPerson.getAddress());
+
+        assertEquals(3, foundPerson.getId());
+
+        assertEquals("Fulano", foundPerson.getFirstName());
+        assertEquals("de Tal", foundPerson.getLastName());
+        assertEquals("Rio de Janeiro - Brazil", foundPerson.getAddress());
+        assertTrue(foundPerson.getEnabled());
     }
 
     private void mockPerson() {
