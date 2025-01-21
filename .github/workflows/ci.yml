@@ -38,7 +38,7 @@ jobs:
       run: docker compose build
 
     - name: push to docker hub
-      run:
+      run: |
         docker tag ${{ secrets.DOCKER_USERNAME }}/magical-grass:latest ${{ secrets.DOCKER_USERNAME }}/magical-grass:${{ github.run_id }}
         docker push ${{ secrets.DOCKER_USERNAME }}/magical-grass:${{ github.run_id }}
         docker push ${{ secrets.DOCKER_USERNAME }}/magical-grass:latest
